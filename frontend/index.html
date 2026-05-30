@@ -31,12 +31,32 @@
         <aside class="hero-side">
           <div class="credential-card">
             <h2>Тестовые аккаунты</h2>
-            <ul>
-              <li><strong>admin</strong> / admin123</li>
-              <li><strong>teacher</strong> / teacher123</li>
-              <li><strong>student</strong> / student123</li>
-            </ul>
-            <p>Входите под разными ролями и проверяйте сценарии системы.</p>
+            <div class="credential-columns">
+              <div>
+                <h3>Основные</h3>
+                <ul class="credential-list">
+                  <li><strong>admin</strong> / admin123</li>
+                  <li><strong>teacher</strong> / teacher123</li>
+                  <li><strong>student</strong> / student123</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Дополнительные</h3>
+                <ul class="credential-list">
+                  <li><strong>teacher_db</strong> / teacherdb123</li>
+                  <li><strong>teacher_web</strong> / teacherweb123</li>
+                  <li><strong>teacher_sec</strong> / teachersec123</li>
+                  <li><strong>student_anna</strong> / studentanna123</li>
+                  <li><strong>student_boris</strong> / studentboris123</li>
+                  <li><strong>student_elena</strong> / studentelena123</li>
+                  <li><strong>student_roman</strong> / studentroman123</li>
+                </ul>
+              </div>
+            </div>
+            <p class="credential-note">
+              База заполнена тестами, вопросами и пробными прохождениями. Под аккаунтом
+              администратора можно быстро проверить всех пользователей и роли.
+            </p>
           </div>
         </aside>
       </header>
@@ -66,6 +86,33 @@
               <input id="login-password" name="password" type="password" required />
             </label>
             <button class="button button-primary" type="submit">Войти</button>
+          </form>
+
+          <div class="panel-head compact" style="margin-top: 22px;">
+            <div>
+              <p class="panel-label">Регистрация</p>
+              <h3>Создать аккаунт студента</h3>
+            </div>
+            <p class="panel-note">
+              Публичная регистрация доступна только для студентов. Преподавателей и
+              администраторов создает администратор системы.
+            </p>
+          </div>
+
+          <form id="registration-form" class="form-grid">
+            <label>
+              <span>Логин</span>
+              <input id="register-username" name="register-username" type="text" required />
+            </label>
+            <label>
+              <span>ФИО</span>
+              <input id="register-full-name" name="register-full-name" type="text" required />
+            </label>
+            <label>
+              <span>Пароль</span>
+              <input id="register-password" name="register-password" type="password" required />
+            </label>
+            <button class="button button-secondary" type="submit">Зарегистрироваться</button>
           </form>
         </section>
 

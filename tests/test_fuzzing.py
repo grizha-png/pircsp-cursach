@@ -109,3 +109,16 @@ def test_fuzz_role_escalation_attempt_is_blocked(client: TestClient, auth_header
     student_headers = auth_headers("student", "student123")
     response = client.get("/api/users", headers=student_headers)
     assert response.status_code == 403
+
+
+def test_public_registration_cannot_set_privileged_role(client: TestClient) -> None:
+    response = client.post(
+        "/api/auth/register",
+        json={
+            "username": "evilteacher",
+            "full_name": "Попытка Эскалации",
+            "password": "student123",
+            "role": "teacher",
+        },
+    )
+    assert response.status_code == 422

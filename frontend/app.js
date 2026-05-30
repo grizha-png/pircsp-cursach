@@ -29,6 +29,7 @@ const elements = {
   loginPanel: document.getElementById("login-panel"),
   dashboard: document.getElementById("dashboard"),
   loginForm: document.getElementById("login-form"),
+  registrationForm: document.getElementById("registration-form"),
   logoutButton: document.getElementById("logout-button"),
   sessionName: document.getElementById("session-name"),
   sessionRole: document.getElementById("session-role"),
@@ -586,6 +587,25 @@ function render() {
   renderStats();
 }
 
+async function hydrateAuthorizedSession(result, successMessage) {
+  setToken(result.token);
+  state.user = result.user;
+  state.editingTest = makeEmptyTest();
+  render();
+  resetUserForm();
+  renderTestEditor();
+
+  if (state.user.role === "admin") {
+    await Promise.all([loadUsers(), loadTests()]);
+  } else if (state.user.role === "teacher") {
+    await loadTests();
+  } else {
+    await Promise.all([loadTests(), loadStudentAttempts()]);
+  }
+
+  showNotice(successMessage);
+}
+
 async function restoreSession() {
   if (!state.token) {
     state.editingTest = makeEmptyTest();
@@ -622,23 +642,27 @@ elements.loginForm.addEventListener("submit", async (event) => {
       method: "POST",
       body: JSON.stringify(payload),
     });
-    setToken(result.token);
-    state.user = result.user;
-    state.editingTest = makeEmptyTest();
-    render();
-    resetUserForm();
-    renderTestEditor();
-
-    if (state.user.role === "admin") {
-      await Promise.all([loadUsers(), loadTests()]);
-    } else if (state.user.role === "teacher") {
-      await loadTests();
-    } else {
-      await Promise.all([loadTests(), loadStudentAttempts()]);
-    }
-
-    showNotice(`Вход выполнен. Активная роль: ${formatRole(state.user.role)}.`);
+    await hydrateAuthorizedSession(result, `Вход выполнен. Активная роль: ${formatRole(result.user.role)}.`);
     elements.loginForm.reset();
+  } catch (error) {
+    showNotice(error.message, "error");
+  }
+});
+
+elements.registrationForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  try {
+    const payload = {
+      username: document.getElementById("register-username").value.trim(),
+      full_name: document.getElementById("register-full-name").value.trim(),
+      password: document.getElementById("register-password").value,
+    };
+    const result = await api("/auth/register", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+    await hydrateAuthorizedSession(result, "Регистрация выполнена. Вы вошли как студент.");
+    elements.registrationForm.reset();
   } catch (error) {
     showNotice(error.message, "error");
   }

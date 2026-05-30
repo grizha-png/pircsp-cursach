@@ -159,15 +159,32 @@ body {
 }
 
 .credential-card h2,
+.credential-card h3,
 .panel-head h2,
 .panel-head h3 {
   margin: 0 0 10px;
 }
 
-.credential-card ul {
+.credential-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.credential-list {
   margin: 0 0 16px;
   padding-left: 18px;
   color: var(--muted);
+}
+
+.credential-list li {
+  margin-bottom: 6px;
+}
+
+.credential-note {
+  margin: 4px 0 0;
+  color: var(--muted);
+  line-height: 1.55;
 }
 
 .notice {
@@ -556,6 +573,10 @@ textarea {
 
   .hero h1 {
     max-width: none;
+  }
+
+  .credential-columns {
+    grid-template-columns: 1fr;
   }
 
   .button-row,

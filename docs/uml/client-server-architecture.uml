@@ -1,0 +1,67 @@
+@startuml
+left to right direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultTextAlignment center
+skinparam componentStyle rectangle
+
+skinparam node {
+  BackgroundColor #FFF8D6
+  BorderColor #B8860B
+}
+
+skinparam rectangle {
+  BackgroundColor #FFF3CD
+  BorderColor #A85D00
+}
+
+skinparam artifact {
+  BackgroundColor #DDE7FF
+  BorderColor #445DCC
+}
+
+skinparam database {
+  BackgroundColor #DDF6E6
+  BorderColor #1F8A4D
+}
+
+node "Клиент (браузер)" as BrowserNode {
+  artifact "Веб-клиент\nHTML + CSS + JavaScript\nRole-based UI" as WebClient
+}
+
+node "Инфраструктура приложения (Docker)" as InfraNode {
+  rectangle "nginx\nстатика + reverse proxy" as Nginx
+  rectangle "FastAPI REST API\nSession Token + RBAC" as Api
+  database "SQLite\nusers / tests / questions /\noptions / attempts" as Db
+}
+
+WebClient --> Nginx : HTTPS / JSON
+Nginx --> WebClient : HTML / CSS / JS
+Nginx --> Api : /api/*
+Api --> Db : SQL
+
+note bottom of Api
+  Аутентификация:
+  токен-сессии
+
+  Авторизация:
+  роли admin / teacher / student
+
+  Ответственность:
+  CRUD, проверка прав,
+  проверка ответов,
+  расчет результата
+end note
+
+note bottom of WebClient
+  Преподаватель:
+  создание тестов
+
+  Студент:
+  прохождение тестов
+
+  Администратор:
+  управление пользователями
+end note
+
+@enduml

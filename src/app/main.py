@@ -16,6 +16,7 @@ from .schemas import (
     AuthResponse,
     LoginRequest,
     PublishRequest,
+    RegistrationRequest,
     TestInput,
     TestSummary,
     TestView,
@@ -52,6 +53,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.get("/api/health")
     def healthcheck() -> dict:
         return {"status": "ok"}
+
+    @app.post("/api/auth/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
+    def register(payload: RegistrationRequest, connection: Annotated[sqlite3.Connection, Depends(get_db)], request: Request):
+        return services.register_student(
+            connection,
+            username=payload.username,
+            full_name=payload.full_name,
+            password=payload.password,
+            ttl_hours=request.app.state.settings.token_ttl_hours,
+        )
 
     @app.post("/api/auth/login", response_model=AuthResponse)
     def login(payload: LoginRequest, connection: Annotated[sqlite3.Connection, Depends(get_db)], request: Request):

@@ -12,6 +12,26 @@ def test_seeded_accounts_can_login(client: TestClient) -> None:
         assert payload["user"]["username"] == username
 
 
+def test_student_can_self_register(client: TestClient) -> None:
+    response = client.post(
+        "/api/auth/register",
+        json={
+            "username": "newstudent",
+            "full_name": "Новый Студент",
+            "password": "student456",
+        },
+    )
+    assert response.status_code == 201
+    payload = response.json()
+    assert payload["token"]
+    assert payload["user"]["username"] == "newstudent"
+    assert payload["user"]["role"] == "student"
+
+    me_response = client.get("/api/auth/me", headers={"Authorization": f"Bearer {payload['token']}"})
+    assert me_response.status_code == 200
+    assert me_response.json()["username"] == "newstudent"
+
+
 def test_admin_can_crud_user(client: TestClient, auth_headers) -> None:
     headers = auth_headers("admin", "admin123")
 
@@ -87,11 +107,11 @@ def test_student_can_take_published_test(client: TestClient, auth_headers) -> No
     teacher_headers = auth_headers("teacher", "teacher123")
     student_headers = auth_headers("student", "student123")
 
-    tests_response = client.get("/api/tests", headers=student_headers)
-    assert tests_response.status_code == 200
-    tests = tests_response.json()
-    assert tests
-    test_id = tests[0]["id"]
+    teacher_tests_response = client.get("/api/tests", headers=teacher_headers)
+    assert teacher_tests_response.status_code == 200
+    teacher_tests = teacher_tests_response.json()
+    published_teacher_test = next(test for test in teacher_tests if test["is_published"])
+    test_id = published_teacher_test["id"]
 
     detail_response = client.get(f"/api/tests/{test_id}", headers=student_headers)
     assert detail_response.status_code == 200

@@ -146,6 +146,19 @@ def authenticate_user(connection: sqlite3.Connection, username: str, password: s
     return {"token": token, "user": row_to_user_public(user)}
 
 
+def register_student(connection: sqlite3.Connection, username: str, full_name: str, password: str, ttl_hours: int) -> dict:
+    user = create_user(
+        connection,
+        username=username,
+        full_name=full_name,
+        password=password,
+        role="student",
+        is_active=True,
+    )
+    token = create_session(connection, user["id"], ttl_hours)
+    return {"token": token, "user": user}
+
+
 def get_user_by_token(connection: sqlite3.Connection, token: str) -> dict | None:
     session = connection.execute(
         """
