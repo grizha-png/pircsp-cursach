@@ -1,0 +1,21 @@
+@startuml
+node "User Device" {
+  artifact "Browser"
+}
+
+node "Frontend Container" {
+  artifact "Nginx"
+  artifact "Static client files"
+}
+
+node "Backend Container" {
+  artifact "FastAPI app"
+  artifact "Uvicorn"
+}
+
+database "SQLite file" as DB
+
+"Browser" --> "Nginx" : HTTP
+"Nginx" --> "FastAPI app" : /api proxy
+"FastAPI app" --> DB : SQL queries
+@enduml

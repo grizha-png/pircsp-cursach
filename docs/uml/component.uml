@@ -1,0 +1,37 @@
+@startuml
+skinparam componentStyle rectangle
+
+actor "Браузер пользователя" as Browser
+
+package "Frontend" {
+  [HTML/CSS/JS Client] as Client
+  [Role-based UI] as UI
+}
+
+package "Backend / FastAPI" {
+  [REST API] as Api
+  [Auth Service] as Auth
+  [Test Service] as Tests
+  [User Service] as Users
+  [Attempt Service] as Attempts
+  [Validation Layer] as Validation
+}
+
+database "SQLite" as Db
+
+Browser --> Client
+Client --> UI
+UI --> Api : HTTP/JSON
+
+Api --> Auth
+Api --> Tests
+Api --> Users
+Api --> Attempts
+Api --> Validation
+
+Auth --> Db
+Tests --> Db
+Users --> Db
+Attempts --> Db
+Validation --> Api
+@enduml

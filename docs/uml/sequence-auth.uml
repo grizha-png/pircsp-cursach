@@ -1,0 +1,19 @@
+@startuml
+actor User
+participant "Frontend" as FE
+participant "FastAPI API" as API
+participant "Auth Service" as AUTH
+database "SQLite" as DB
+
+User -> FE : Вводит логин и пароль
+FE -> API : POST /api/auth/login
+API -> AUTH : verify_credentials()
+AUTH -> DB : SELECT user by username
+DB --> AUTH : user record
+AUTH -> AUTH : verify password hash
+AUTH -> DB : INSERT session token
+DB --> AUTH : session saved
+AUTH --> API : token + user profile
+API --> FE : 200 OK
+FE --> User : Отображение панели по роли
+@enduml

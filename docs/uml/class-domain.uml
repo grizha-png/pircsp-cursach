@@ -1,0 +1,61 @@
+@startuml
+hide methods
+
+class User {
+  +id: int
+  +username: string
+  +full_name: string
+  +password_hash: string
+  +role: string
+  +is_active: bool
+}
+
+class Session {
+  +id: int
+  +token: string
+  +expires_at: datetime
+}
+
+class Test {
+  +id: int
+  +title: string
+  +description: string
+  +is_published: bool
+}
+
+class Question {
+  +id: int
+  +prompt: string
+  +explanation: string
+  +position: int
+}
+
+class Option {
+  +id: int
+  +text: string
+  +is_correct: bool
+  +position: int
+}
+
+class Attempt {
+  +id: int
+  +score: int
+  +total_questions: int
+  +submitted_at: datetime
+}
+
+class AttemptAnswer {
+  +id: int
+  +is_correct: bool
+}
+
+User "1" -- "0..*" Session
+User "1" -- "0..*" Test : creates >
+User "1" -- "0..*" Attempt : submits >
+Test "1" -- "1..*" Question
+Question "1" -- "2..*" Option
+Test "1" -- "0..*" Attempt
+Attempt "1" -- "1..*" AttemptAnswer
+AttemptAnswer "1" -- "1" Question
+AttemptAnswer "1" -- "1" Option
+@enduml

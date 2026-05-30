@@ -1,0 +1,45 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor Admin as admin
+actor Teacher as teacher
+actor Student as student
+
+rectangle "Интерактивный конструктор образовательных тестов" {
+  usecase "Войти в систему" as UCLogin
+  usecase "Просмотреть профиль" as UCProfile
+  usecase "Управлять пользователями" as UCUsers
+  usecase "Создать тест" as UCCreateTest
+  usecase "Редактировать тест" as UCEditTest
+  usecase "Удалить тест" as UCDeleteTest
+  usecase "Опубликовать тест" as UCPublish
+  usecase "Просмотреть результаты\nпрохождения" as UCResults
+  usecase "Просмотреть доступные тесты" as UCListTests
+  usecase "Пройти тест" as UCTakeTest
+  usecase "Просмотреть свою историю\nпопыток" as UCHistory
+}
+
+admin --> UCLogin
+admin --> UCProfile
+admin --> UCUsers
+
+teacher --> UCLogin
+teacher --> UCProfile
+teacher --> UCCreateTest
+teacher --> UCEditTest
+teacher --> UCDeleteTest
+teacher --> UCPublish
+teacher --> UCResults
+
+student --> UCLogin
+student --> UCProfile
+student --> UCListTests
+student --> UCTakeTest
+student --> UCHistory
+
+UCEditTest .> UCCreateTest : <<extends>>
+UCPublish .> UCEditTest : <<uses>>
+UCTakeTest .> UCListTests : <<uses>>
+UCResults .> UCEditTest : <<uses>>
+@enduml
