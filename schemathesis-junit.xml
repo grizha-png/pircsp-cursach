@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites disabled="0" errors="0" failures="8" tests="11" time="4.181390332058072">
+	<testsuite disabled="0" errors="0" failures="8" name="schemathesis" skipped="0" tests="11" time="4.181390332058072" hostname="0000NBB0WPV6PC6">
+		<testcase name="POST /api/auth/login" time="0.915008">
+			<failure type="failure" message="1. Test Case ID: w2M7XP
+
+- Undocumented HTTP status code
+
+    Received: 401
+    Documented: 200, 422
+
+[401] Unauthorized:
+
+    `{&quot;detail&quot;:&quot;Invalid username or password.&quot;}`
+
+Reproduce with:
+
+    curl -X POST -H 'Authorization: [Filtered]' -H 'Content-Type: application/json' -d '{&quot;password&quot;: &quot;000000&quot;, &quot;username&quot;: &quot;000&quot;}' https://pircsp-cursach.onrender.com/api/auth/login"/>
+		</testcase>
+		<testcase name="POST /api/tests" time="0.223694">
+			<failure type="failure" message="1. Test Case ID: vzepRq
+
+- Undocumented HTTP status code
+
+    Received: 403
+    Documented: 201, 422
+
+[403] Forbidden:
+
+    `{&quot;detail&quot;:&quot;Not enough permissions.&quot;}`
+
+Reproduce with:
+
+    curl -X POST -H 'Authorization: [Filtered]' -H 'Content-Type: application/json' -d '{&quot;questions&quot;: [{&quot;options&quot;: [{&quot;is_correct&quot;: false, &quot;text&quot;: &quot;0&quot;}, {&quot;is_correct&quot;: false, &quot;text&quot;: &quot;0&quot;}], &quot;prompt&quot;: &quot;00000&quot;}], &quot;title&quot;: &quot;000&quot;}' https://pircsp-cursach.onrender.com/api/tests"/>
+		</testcase>
+		<testcase name="GET /api/attempts/me" time="0.298737"/>
+		<testcase name="GET /api/auth/me" time="0.256860"/>
+		<testcase name="GET /api/tests" time="0.310378"/>
+		<testcase name="POST /api/tests/{test_id}/publish" time="0.222690">
+			<failure type="failure" message="1. Test Case ID: ACaW3I
+
+- Undocumented HTTP status code
+
+    Received: 403
+    Documented: 200, 422
+
+[403] Forbidden:
+
+    `{&quot;detail&quot;:&quot;Not enough permissions.&quot;}`
+
+Reproduce with:
+
+    curl -X POST -H 'Authorization: [Filtered]' -H 'Content-Type: application/json' -d '{&quot;is_published&quot;: true}' https://pircsp-cursach.onrender.com/api/tests/6/publish"/>
+		</testcase>
+		<testcase name="POST /api/tests/{test_id}/submit" time="0.228621">
+			<failure type="failure" message="1. Test Case ID: 2IfIea
+
+- Undocumented HTTP status code
+
+    Received: 400
+    Documented: 200, 422
+
+[400] Bad Request:
+
+    `{&quot;detail&quot;:&quot;Every question must be answered exactly once.&quot;}`
+
+Reproduce with:
+
+    curl -X POST -H 'Authorization: [Filtered]' -H 'Content-Type: application/json' -d '{&quot;answers&quot;: [{&quot;option_id&quot;: 0, &quot;question_id&quot;: 0}]}' https://pircsp-cursach.onrender.com/api/tests/6/submit"/>
+		</testcase>
+		<testcase name="GET /api/tests/{test_id}/attempts" time="0.255371">
+			<failure type="failure" message="1. Test Case ID: t9hikv
+
+- Undocumented HTTP status code
+
+    Received: 403
+    Documented: 200, 422
+
+[403] Forbidden:
+
+    `{&quot;detail&quot;:&quot;Not enough permissions.&quot;}`
+
+Reproduce with:
+
+    curl -X GET -H 'Authorization: [Filtered]' https://pircsp-cursach.onrender.com/api/tests/5/attempts"/>
+		</testcase>
+		<testcase name="PUT /api/tests/{test_id}" time="0.249421">
+			<failure type="failure" message="1. Test Case ID: e9ZFoQ
+
+- Undocumented HTTP status code
+
+    Received: 403
+    Documented: 200, 422
+
+[403] Forbidden:
+
+    `{&quot;detail&quot;:&quot;Not enough permissions.&quot;}`
+
+Reproduce with:
+
+    curl -X PUT -H 'Authorization: [Filtered]' -H 'Content-Type: application/json' -d '{&quot;questions&quot;: [{&quot;options&quot;: [{&quot;is_correct&quot;: false, &quot;text&quot;: &quot;0&quot;}, {&quot;is_correct&quot;: false, &quot;text&quot;: &quot;0&quot;}], &quot;prompt&quot;: &quot;00000&quot;}], &quot;title&quot;: &quot;000&quot;}' https://pircsp-cursach.onrender.com/api/tests/1"/>
+		</testcase>
+		<testcase name="GET /api/tests/{test_id}" time="0.973195">
+			<failure type="failure" message="1. Test Case ID: r6SFtL
+
+- Undocumented HTTP status code
+
+    Received: 404
+    Documented: 200, 422
+
+[404] Not Found:
+
+    `{&quot;detail&quot;:&quot;Test not found.&quot;}`
+
+Reproduce with:
+
+    curl -X GET -H 'Authorization: [Filtered]' https://pircsp-cursach.onrender.com/api/tests/438"/>
+		</testcase>
+		<testcase name="DELETE /api/tests/{test_id}" time="0.247415">
+			<failure type="failure" message="1. Test Case ID: U1Bqff
+
+- Undocumented HTTP status code
+
+    Received: 403
+    Documented: 204, 422
+
+[403] Forbidden:
+
+    `{&quot;detail&quot;:&quot;Not enough permissions.&quot;}`
+
+Reproduce with:
+
+    curl -X DELETE -H 'Authorization: [Filtered]' https://pircsp-cursach.onrender.com/api/tests/1"/>
+		</testcase>
+	</testsuite>
+</testsuites>

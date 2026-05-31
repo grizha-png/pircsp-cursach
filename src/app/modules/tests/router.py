@@ -13,7 +13,7 @@ from .service import create_test, delete_test_for_user, get_test_for_user, list_
 router = APIRouter(prefix="/api/tests", tags=["tests"])
 
 
-@router.get("", response_model=list[TestSummary])
+@router.get("", response_model=list[TestSummary], responses={401: {"description": "Unauthorized"}})
 def read_tests(
     current_user: Annotated[dict, Depends(get_current_user)],
     connection: Annotated[sqlite3.Connection, Depends(get_db)],
@@ -21,7 +21,11 @@ def read_tests(
     return list_tests(connection, current_user)
 
 
-@router.get("/{test_id}", response_model=TestView)
+@router.get(
+    "/{test_id}",
+    response_model=TestView,
+    responses={401: {"description": "Unauthorized"}, 403: {"description": "Forbidden"}, 404: {"description": "Test not found"}, 422: {"description": "Validation error"}},
+)
 def read_test(
     test_id: int,
     current_user: Annotated[dict, Depends(get_current_user)],
@@ -30,7 +34,12 @@ def read_test(
     return get_test_for_user(connection, test_id, current_user)
 
 
-@router.post("", response_model=TestView, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=TestView,
+    status_code=status.HTTP_201_CREATED,
+    responses={401: {"description": "Unauthorized"}, 403: {"description": "Forbidden"}, 422: {"description": "Validation error"}},
+)
 def create_new_test(
     payload: TestInput,
     current_user: Annotated[dict, Depends(require_roles("teacher", "admin"))],
@@ -39,7 +48,11 @@ def create_new_test(
     return create_test(connection, payload.model_dump(), owner_id=current_user["id"])
 
 
-@router.put("/{test_id}", response_model=TestView)
+@router.put(
+    "/{test_id}",
+    response_model=TestView,
+    responses={401: {"description": "Unauthorized"}, 403: {"description": "Forbidden"}, 404: {"description": "Test not found"}, 422: {"description": "Validation error"}},
+)
 def update_existing_test(
     test_id: int,
     payload: TestInput,
@@ -49,7 +62,11 @@ def update_existing_test(
     return update_test_for_user(connection, test_id, payload.model_dump(), current_user)
 
 
-@router.delete("/{test_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{test_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={401: {"description": "Unauthorized"}, 403: {"description": "Forbidden"}, 404: {"description": "Test not found"}},
+)
 def remove_test(
     test_id: int,
     current_user: Annotated[dict, Depends(require_roles("teacher", "admin"))],
@@ -59,7 +76,11 @@ def remove_test(
     return None
 
 
-@router.post("/{test_id}/publish", response_model=TestSummary)
+@router.post(
+    "/{test_id}/publish",
+    response_model=TestSummary,
+    responses={401: {"description": "Unauthorized"}, 403: {"description": "Forbidden"}, 404: {"description": "Test not found"}, 422: {"description": "Validation error"}},
+)
 def publish_test(
     test_id: int,
     payload: PublishRequest,

@@ -13,7 +13,11 @@ from .service import list_attempts_for_student, list_attempts_for_test_for_user,
 router = APIRouter(tags=["attempts"])
 
 
-@router.post("/api/tests/{test_id}/submit", response_model=AttemptView)
+@router.post(
+    "/api/tests/{test_id}/submit",
+    response_model=AttemptView,
+    responses={400: {"description": "Bad request"}, 401: {"description": "Unauthorized"}, 403: {"description": "Forbidden"}, 404: {"description": "Test not found"}, 422: {"description": "Validation error"}},
+)
 def submit_test(
     test_id: int,
     payload: AttemptSubmitRequest,
@@ -23,7 +27,7 @@ def submit_test(
     return submit_attempt(connection, test_id, current_user["id"], [answer.model_dump() for answer in payload.answers])
 
 
-@router.get("/api/attempts/me", response_model=list[AttemptView])
+@router.get("/api/attempts/me", response_model=list[AttemptView], responses={401: {"description": "Unauthorized"}, 403: {"description": "Forbidden"}})
 def read_my_attempts(
     current_user: Annotated[dict, Depends(require_roles("student"))],
     connection: Annotated[sqlite3.Connection, Depends(get_db)],
@@ -31,7 +35,11 @@ def read_my_attempts(
     return list_attempts_for_student(connection, current_user["id"])
 
 
-@router.get("/api/tests/{test_id}/attempts", response_model=list[AttemptView])
+@router.get(
+    "/api/tests/{test_id}/attempts",
+    response_model=list[AttemptView],
+    responses={401: {"description": "Unauthorized"}, 403: {"description": "Forbidden"}, 404: {"description": "Test not found"}, 422: {"description": "Validation error"}},
+)
 def read_test_attempts(
     test_id: int,
     current_user: Annotated[dict, Depends(require_roles("teacher", "admin"))],

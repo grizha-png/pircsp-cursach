@@ -14,7 +14,12 @@ from .service import authenticate_user, delete_session, register_student
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
-@router.post("/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register",
+    response_model=AuthResponse,
+    status_code=status.HTTP_201_CREATED,
+    responses={422: {"description": "Validation error"}, 409: {"description": "Username already exists"}},
+)
 def register(
     payload: RegistrationRequest,
     connection: Annotated[sqlite3.Connection, Depends(get_db)],
@@ -29,7 +34,11 @@ def register(
     )
 
 
-@router.post("/login", response_model=AuthResponse)
+@router.post(
+    "/login",
+    response_model=AuthResponse,
+    responses={401: {"description": "Invalid credentials"}, 403: {"description": "Inactive user"}, 422: {"description": "Validation error"}},
+)
 def login(
     payload: LoginRequest,
     connection: Annotated[sqlite3.Connection, Depends(get_db)],
@@ -43,12 +52,12 @@ def login(
     )
 
 
-@router.get("/me", response_model=UserPublic)
+@router.get("/me", response_model=UserPublic, responses={401: {"description": "Unauthorized"}})
 def read_me(current_user: Annotated[dict, Depends(get_current_user)]):
     return current_user
 
 
-@router.post("/logout")
+@router.post("/logout", responses={401: {"description": "Unauthorized"}})
 def logout(
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],
     connection: Annotated[sqlite3.Connection, Depends(get_db)],
