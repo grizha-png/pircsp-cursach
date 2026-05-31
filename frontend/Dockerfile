@@ -1,4 +1,7 @@
 FROM nginx:1.27-alpine
 
-COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
+ENV PORT=80
+ENV BACKEND_HOSTPORT=backend:8000
+
 COPY frontend /usr/share/nginx/html
+COPY frontend/nginx.conf /etc/nginx/templates/default.conf.template

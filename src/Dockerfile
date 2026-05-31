@@ -10,4 +10,4 @@ COPY src /app/src
 ENV PYTHONPATH=/app/src
 ENV DB_PATH=/app/data/app.db
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
