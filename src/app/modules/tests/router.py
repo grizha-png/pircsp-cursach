@@ -38,7 +38,12 @@ def read_test(
     "",
     response_model=TestView,
     status_code=status.HTTP_201_CREATED,
-    responses={401: {"description": "Unauthorized"}, 403: {"description": "Forbidden"}, 422: {"description": "Validation error"}},
+    responses={
+        400: {"description": "Malformed request body"},
+        401: {"description": "Unauthorized"},
+        403: {"description": "Forbidden"},
+        422: {"description": "Validation error"},
+    },
 )
 def create_new_test(
     payload: TestInput,
@@ -51,7 +56,13 @@ def create_new_test(
 @router.put(
     "/{test_id}",
     response_model=TestView,
-    responses={401: {"description": "Unauthorized"}, 403: {"description": "Forbidden"}, 404: {"description": "Test not found"}, 422: {"description": "Validation error"}},
+    responses={
+        400: {"description": "Malformed request body"},
+        401: {"description": "Unauthorized"},
+        403: {"description": "Forbidden"},
+        404: {"description": "Test not found"},
+        422: {"description": "Validation error"},
+    },
 )
 def update_existing_test(
     test_id: int,

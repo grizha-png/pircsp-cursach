@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites disabled="0" errors="0" failures="0" tests="8" time="7.280345207895152">
+	<testsuite disabled="0" errors="0" failures="0" name="schemathesis" skipped="0" tests="8" time="7.280345207895152" hostname="0000NBB0WPV6PC6">
+		<testcase name="POST /api/tests" time="1.872928"/>
+		<testcase name="GET /api/attempts/me" time="0.231873"/>
+		<testcase name="GET /api/auth/me" time="0.218885"/>
+		<testcase name="GET /api/tests" time="0.237851"/>
+		<testcase name="POST /api/tests/{test_id}/submit" time="1.141664"/>
+		<testcase name="PUT /api/tests/{test_id}" time="1.158350"/>
+		<testcase name="GET /api/tests/{test_id}" time="1.178158"/>
+		<testcase name="DELETE /api/tests/{test_id}" time="1.240636"/>
+	</testsuite>
+</testsuites>
