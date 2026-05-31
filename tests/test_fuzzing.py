@@ -105,6 +105,12 @@ def test_fuzz_broken_attempt_payload(client: TestClient, auth_headers) -> None:
     assert response.status_code == 400
 
 
+def test_huge_test_id_is_rejected_before_database_lookup(client: TestClient, auth_headers) -> None:
+    student_headers = auth_headers("student", "student123")
+    response = client.get("/api/tests/6113989177382905315328", headers=student_headers)
+    assert response.status_code == 422
+
+
 def test_fuzz_role_escalation_attempt_is_blocked(client: TestClient, auth_headers) -> None:
     student_headers = auth_headers("student", "student123")
     response = client.get("/api/users", headers=student_headers)

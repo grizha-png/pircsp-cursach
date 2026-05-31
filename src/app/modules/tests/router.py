@@ -3,7 +3,7 @@ from __future__ import annotations
 import sqlite3
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Path, status
 
 from ...api.dependencies import get_db
 from ...validation.schemas import PublishRequest, TestInput, TestSummary, TestView
@@ -11,6 +11,7 @@ from ..auth.dependencies import get_current_user, require_roles
 from .service import create_test, delete_test_for_user, get_test_for_user, list_tests, set_test_publication_for_user, update_test_for_user
 
 router = APIRouter(prefix="/api/tests", tags=["tests"])
+TestId = Annotated[int, Path(ge=1, le=9_223_372_036_854_775_807)]
 
 
 @router.get("", response_model=list[TestSummary], responses={401: {"description": "Unauthorized"}})
@@ -27,7 +28,7 @@ def read_tests(
     responses={401: {"description": "Unauthorized"}, 403: {"description": "Forbidden"}, 404: {"description": "Test not found"}, 422: {"description": "Validation error"}},
 )
 def read_test(
-    test_id: int,
+    test_id: TestId,
     current_user: Annotated[dict, Depends(get_current_user)],
     connection: Annotated[sqlite3.Connection, Depends(get_db)],
 ):
@@ -65,7 +66,7 @@ def create_new_test(
     },
 )
 def update_existing_test(
-    test_id: int,
+    test_id: TestId,
     payload: TestInput,
     current_user: Annotated[dict, Depends(require_roles("teacher", "admin"))],
     connection: Annotated[sqlite3.Connection, Depends(get_db)],
@@ -79,7 +80,7 @@ def update_existing_test(
     responses={401: {"description": "Unauthorized"}, 403: {"description": "Forbidden"}, 404: {"description": "Test not found"}},
 )
 def remove_test(
-    test_id: int,
+    test_id: TestId,
     current_user: Annotated[dict, Depends(require_roles("teacher", "admin"))],
     connection: Annotated[sqlite3.Connection, Depends(get_db)],
 ):
@@ -93,7 +94,7 @@ def remove_test(
     responses={401: {"description": "Unauthorized"}, 403: {"description": "Forbidden"}, 404: {"description": "Test not found"}, 422: {"description": "Validation error"}},
 )
 def publish_test(
-    test_id: int,
+    test_id: TestId,
     payload: PublishRequest,
     current_user: Annotated[dict, Depends(require_roles("teacher", "admin"))],
     connection: Annotated[sqlite3.Connection, Depends(get_db)],
