@@ -31,8 +31,5 @@ services:
     dockerContext: .
     dockerfilePath: ./frontend/Dockerfile
     envVars:
-      - key: BACKEND_HOSTPORT
-        fromService:
-          name: edutest-backend
-          type: web
-          property: hostport
+      - key: BACKEND_URL
+        value: https://pircsp-cursach.onrender.com
