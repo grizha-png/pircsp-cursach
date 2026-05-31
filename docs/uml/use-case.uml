@@ -1,45 +1,57 @@
 @startuml
 left to right direction
+skinparam shadowing false
 skinparam packageStyle rectangle
 
-actor Admin as admin
-actor Teacher as teacher
-actor Student as student
+actor "Гость" as Guest
+actor "Авторизованный\nпользователь" as AuthUser
+actor "Студент" as Student
+actor "Преподаватель" as Teacher
+actor "Администратор" as Admin
+
+Student --|> AuthUser
+Teacher --|> AuthUser
+Admin --|> AuthUser
 
 rectangle "Интерактивный конструктор образовательных тестов" {
-  usecase "Войти в систему" as UCLogin
-  usecase "Просмотреть профиль" as UCProfile
-  usecase "Управлять пользователями" as UCUsers
-  usecase "Создать тест" as UCCreateTest
-  usecase "Редактировать тест" as UCEditTest
-  usecase "Удалить тест" as UCDeleteTest
-  usecase "Опубликовать тест" as UCPublish
-  usecase "Просмотреть результаты\nпрохождения" as UCResults
-  usecase "Просмотреть доступные тесты" as UCListTests
-  usecase "Пройти тест" as UCTakeTest
-  usecase "Просмотреть свою историю\nпопыток" as UCHistory
+  rectangle "Публичные функции" {
+    usecase "Регистрация\nстудента" as UCRegister
+    usecase "Вход\nв систему" as UCLogin
+  }
+
+  rectangle "Функции студента" {
+    usecase "Просмотр опубликованных\nтестов" as UCListTests
+    usecase "Прохождение\nтеста" as UCTakeTest
+    usecase "Просмотр своей истории\nпопыток" as UCHistory
+  }
+
+  rectangle "Функции преподавателя" {
+    usecase "Создание и редактирование\nтестов" as UCManageTests
+    usecase "Публикация\nтестов" as UCPublishTests
+    usecase "Просмотр попыток\nпо тесту" as UCViewAttempts
+  }
+
+  rectangle "Функции администратора" {
+    usecase "Управление\nпользователями" as UCManageUsers
+    usecase "Просмотр списка\nтестов" as UCViewAllTests
+  }
+
+  usecase "Выход из системы" as UCLogout
 }
 
-admin --> UCLogin
-admin --> UCProfile
-admin --> UCUsers
+Guest --> UCRegister
+Guest --> UCLogin
 
-teacher --> UCLogin
-teacher --> UCProfile
-teacher --> UCCreateTest
-teacher --> UCEditTest
-teacher --> UCDeleteTest
-teacher --> UCPublish
-teacher --> UCResults
+AuthUser --> UCLogout
 
-student --> UCLogin
-student --> UCProfile
-student --> UCListTests
-student --> UCTakeTest
-student --> UCHistory
+Student --> UCListTests
+Student --> UCTakeTest
+Student --> UCHistory
 
-UCEditTest .> UCCreateTest : <<extends>>
-UCPublish .> UCEditTest : <<uses>>
-UCTakeTest .> UCListTests : <<uses>>
-UCResults .> UCEditTest : <<uses>>
+Teacher --> UCManageTests
+Teacher --> UCPublishTests
+Teacher --> UCViewAttempts
+
+Admin --> UCManageUsers
+Admin --> UCViewAllTests
 @enduml

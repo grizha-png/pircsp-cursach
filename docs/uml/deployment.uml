@@ -1,21 +1,35 @@
 @startuml
-node "User Device" {
-  artifact "Browser"
+left to right direction
+skinparam shadowing false
+skinparam componentStyle rectangle
+
+actor "Пользователь\n(браузер)" as Browser
+
+node "Инфраструктура приложения (Docker)" as DockerHost {
+  node "Контейнер frontend\nnginx" as Frontend {
+    [Статические файлы\nHTML + CSS + JavaScript] as StaticClient
+    [Reverse proxy\n/api/*] as Proxy
+  }
+
+  node "Контейнер backend\nFastAPI + Uvicorn" as Backend {
+    [REST API Routers\n/auth /users /tests /attempts] as Routers
+    [Auth Dependencies\nsession token + RBAC] as AuthDeps
+    [Pydantic Validation] as Validation
+    [Service Layer] as Services
+    [Repository Layer] as Repositories
+  }
+
+  folder "Volume ./data:/app/data" as Volume {
+    database "SQLite\napp.db" as Db
+  }
 }
 
-node "Frontend Container" {
-  artifact "Nginx"
-  artifact "Static client files"
-}
-
-node "Backend Container" {
-  artifact "FastAPI app"
-  artifact "Uvicorn"
-}
-
-database "SQLite file" as DB
-
-"Browser" --> "Nginx" : HTTP
-"Nginx" --> "FastAPI app" : /api proxy
-"FastAPI app" --> DB : SQL queries
+Browser --> StaticClient : HTTP / HTTPS
+StaticClient --> Proxy : действия в UI
+Proxy --> Routers : /api/*
+Routers --> AuthDeps : проверка токена
+Routers --> Validation : проверка DTO
+Routers --> Services : бизнес-логика
+Services --> Repositories : доступ к данным
+Repositories --> Db : SQL
 @enduml

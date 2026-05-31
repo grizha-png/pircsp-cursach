@@ -3,6 +3,7 @@ from __future__ import annotations
 import sqlite3
 
 from . import services
+from .db import repositories
 
 
 def _ensure_user(
@@ -28,10 +29,7 @@ def _ensure_user(
 
 
 def _ensure_test(connection: sqlite3.Connection, owner_id: int, payload: dict) -> int:
-    existing = connection.execute(
-        "SELECT id FROM tests WHERE owner_id = ? AND title = ?",
-        (owner_id, payload["title"]),
-    ).fetchone()
+    existing = repositories.fetch_test_id_by_owner_and_title(connection, owner_id, payload["title"])
     if existing:
         return existing["id"]
     created = services.create_test(connection, payload=payload, owner_id=owner_id)
@@ -53,11 +51,7 @@ def _build_answers(test_detail: dict, correctness_pattern: list[bool]) -> list[d
 
 
 def _ensure_attempt(connection: sqlite3.Connection, *, test_id: int, student_id: int, correctness_pattern: list[bool]) -> None:
-    existing = connection.execute(
-        "SELECT 1 FROM attempts WHERE test_id = ? AND user_id = ? LIMIT 1",
-        (test_id, student_id),
-    ).fetchone()
-    if existing:
+    if repositories.attempt_exists_for_student_and_test(connection, test_id, student_id):
         return
     test_detail = services.get_test_detail(connection, test_id, include_correct=True)
     answers = _build_answers(test_detail, correctness_pattern)

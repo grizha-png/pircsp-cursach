@@ -1,37 +1,35 @@
 @startuml
+left to right direction
+skinparam shadowing false
 skinparam componentStyle rectangle
 
-actor "Браузер пользователя" as Browser
+actor "Пользователь\n(браузер)" as Browser
 
-package "Frontend" {
-  [HTML/CSS/JS Client] as Client
-  [Role-based UI] as UI
+node "Инфраструктура приложения (Docker)" as DockerHost {
+  node "Контейнер frontend\nnginx" as Frontend {
+    [Статические файлы\nHTML + CSS + JavaScript] as StaticClient
+    [Reverse proxy\n/api/*] as Proxy
+  }
+
+  node "Контейнер backend\nFastAPI + Uvicorn" as Backend {
+    [REST API Routers\n/auth /users /tests /attempts] as Routers
+    [Auth Dependencies\nsession token + RBAC] as AuthDeps
+    [Pydantic Validation] as Validation
+    [Service Layer] as Services
+    [Repository Layer] as Repositories
+  }
+
+  folder "Volume ./data:/app/data" as Volume {
+    database "SQLite\napp.db" as Db
+  }
 }
 
-package "Backend / FastAPI" {
-  [REST API] as Api
-  [Auth Service] as Auth
-  [Test Service] as Tests
-  [User Service] as Users
-  [Attempt Service] as Attempts
-  [Validation Layer] as Validation
-}
-
-database "SQLite" as Db
-
-Browser --> Client
-Client --> UI
-UI --> Api : HTTP/JSON
-
-Api --> Auth
-Api --> Tests
-Api --> Users
-Api --> Attempts
-Api --> Validation
-
-Auth --> Db
-Tests --> Db
-Users --> Db
-Attempts --> Db
-Validation --> Api
+Browser --> StaticClient : HTTP / HTTPS
+StaticClient --> Proxy : действия в UI
+Proxy --> Routers : /api/*
+Routers --> AuthDeps : проверка токена
+Routers --> Validation : проверка DTO
+Routers --> Services : бизнес-логика
+Services --> Repositories : доступ к данным
+Repositories --> Db : SQL
 @enduml

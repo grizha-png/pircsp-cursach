@@ -1,0 +1,75 @@
+@startuml
+skinparam shadowing false
+autonumber
+
+actor "Студент" as Student
+participant "Web Client" as Client
+participant "Attempts Router" as Router
+participant "Auth Dependency" as Auth
+participant "Attempts Service" as Service
+participant "Repositories" as Repo
+database "SQLite" as Db
+
+Student -> Client : Нажимает «Отправить ответы»
+Client -> Client : Проверка заполнения формы
+Client -> Router : POST /api/tests/{id}/submit\nAuthorization: Bearer token\nJSON answers
+Router -> Auth : require_roles(\"student\")
+Auth -> Repo : fetch_user_session_by_token(token)
+Repo -> Db : SELECT session + user
+Db --> Repo : session, user
+Repo --> Auth : current_user
+Auth --> Router : student user
+Router -> Router : Pydantic validation\nAttemptSubmitRequest
+Router -> Service : submit_attempt(test_id, student_id, answers)
+Service -> Repo : fetch_test_summary_row(test_id)
+Repo -> Db : SELECT test
+Db --> Repo : test
+Repo --> Service : test
+
+alt Тест не опубликован
+  Service --> Router : HTTP 400 Test is not published
+  Router --> Client : 400 JSON error
+  Client --> Student : Показ сообщения об ошибке
+else Тест доступен
+  Service -> Repo : fetch_question_ids_for_test(test_id)
+  Repo -> Db : SELECT questions
+  Db --> Repo : question ids
+  Repo --> Service : question ids
+
+  Service -> Repo : fetch_option_rows_for_questions(question_ids)
+  Repo -> Db : SELECT options
+  Db --> Repo : option map
+  Repo --> Service : option map
+
+  Service -> Repo : fetch_correct_option_rows_for_questions(question_ids)
+  Repo -> Db : SELECT correct options
+  Db --> Repo : correct options
+  Repo --> Service : correct options
+
+  Service -> Service : Проверка структуры ответов\nи расчет балла
+  Service -> Repo : insert_attempt(...)
+  Repo -> Db : INSERT INTO attempts
+  Db --> Repo : attempt_id
+  Repo --> Service : attempt_id
+
+  loop Для каждого ответа
+    Service -> Repo : insert_attempt_answer(...)
+    Repo -> Db : INSERT INTO attempt_answers
+    Db --> Repo : ok
+  end
+
+  Service -> Repo : fetch_attempt_row(attempt_id)
+  Repo -> Db : SELECT attempt
+  Db --> Repo : attempt row
+  Repo --> Service : attempt row
+
+  Service -> Repo : fetch_attempt_answer_rows(attempt_id)
+  Repo -> Db : SELECT attempt answers
+  Db --> Repo : answer rows
+  Repo --> Service : answer rows
+
+  Service --> Router : AttemptView
+  Router --> Client : 200 OK + JSON
+  Client --> Student : Показ результата тестирования
+end
+@enduml

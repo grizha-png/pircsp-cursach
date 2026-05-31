@@ -1,0 +1,103 @@
+@startuml
+hide circle
+hide methods
+hide stereotypes
+skinparam shadowing false
+skinparam linetype ortho
+skinparam class {
+  BackgroundColor #FFF9DC
+  BorderColor #A87400
+  ArrowColor #5F6368
+}
+
+entity "User" as User {
+  * id : INTEGER <<PK>>
+  --
+  username : TEXT <<UNIQUE>>
+  full_name : TEXT
+  password_hash : TEXT
+  role : TEXT
+  is_active : INTEGER
+  created_at : TEXT
+}
+
+entity "Session" as Session {
+  * id : INTEGER <<PK>>
+  --
+  user_id : INTEGER <<FK>>
+  token : TEXT <<UNIQUE>>
+  expires_at : TEXT
+  created_at : TEXT
+}
+
+entity "Test" as Test {
+  * id : INTEGER <<PK>>
+  --
+  owner_id : INTEGER <<FK>>
+  title : TEXT
+  description : TEXT
+  is_published : INTEGER
+  created_at : TEXT
+  updated_at : TEXT
+}
+
+entity "Question" as Question {
+  * id : INTEGER <<PK>>
+  --
+  test_id : INTEGER <<FK>>
+  prompt : TEXT
+  explanation : TEXT
+  position : INTEGER
+}
+
+entity "Option" as Option {
+  * id : INTEGER <<PK>>
+  --
+  question_id : INTEGER <<FK>>
+  text : TEXT
+  is_correct : INTEGER
+  position : INTEGER
+}
+
+entity "Attempt" as Attempt {
+  * id : INTEGER <<PK>>
+  --
+  test_id : INTEGER <<FK>>
+  user_id : INTEGER <<FK>>
+  score : INTEGER
+  total_questions : INTEGER
+  submitted_at : TEXT
+}
+
+entity "AttemptAnswer" as AttemptAnswer {
+  * id : INTEGER <<PK>>
+  --
+  attempt_id : INTEGER <<FK>>
+  question_id : INTEGER <<FK>>
+  option_id : INTEGER <<FK>>
+  is_correct : INTEGER
+}
+
+User ||--o{ Session : has
+User ||--o{ Test : creates
+User ||--o{ Attempt : makes
+Test ||--o{ Question : contains
+Question ||--o{ Option : has
+Test ||--o{ Attempt : includes
+Attempt ||--o{ AttemptAnswer : stores
+Question ||--o{ AttemptAnswer : refers
+Option ||--o{ AttemptAnswer : selected
+
+note right of Attempt
+  Через Attempt реализуется
+  связь many-to-many между
+  студентами и тестами.
+end note
+
+note bottom of AttemptAnswer
+  Таблица хранит состав
+  прохождения по вопросам
+  и выбранным вариантам.
+end note
+
+@enduml

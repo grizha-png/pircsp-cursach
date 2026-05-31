@@ -1,61 +1,87 @@
 @startuml
-hide methods
+left to right direction
+hide circle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
 
-class User {
-  +id: int
-  +username: string
-  +full_name: string
-  +password_hash: string
-  +role: string
-  +is_active: bool
+together {
+  class User {
+    +id: int
+    +username: string
+    +full_name: string
+    +password_hash: string
+    +role: Role
+    +is_active: bool
+    +created_at: datetime
+  }
+
+  class Session {
+    +id: int
+    +token: string
+    +expires_at: datetime
+    +created_at: datetime
+  }
+
+  enum Role {
+    admin
+    teacher
+    student
+  }
 }
 
-class Session {
-  +id: int
-  +token: string
-  +expires_at: datetime
+together {
+  class Test {
+    +id: int
+    +title: string
+    +description: string
+    +is_published: bool
+    +created_at: datetime
+    +updated_at: datetime
+  }
+
+  class Question {
+    +id: int
+    +prompt: string
+    +explanation: string
+    +position: int
+  }
+
+  class Option {
+    +id: int
+    +text: string
+    +is_correct: bool
+    +position: int
+  }
 }
 
-class Test {
-  +id: int
-  +title: string
-  +description: string
-  +is_published: bool
+together {
+  class Attempt {
+    +id: int
+    +score: int
+    +total_questions: int
+    +submitted_at: datetime
+  }
+
+  class AttemptAnswer {
+    +id: int
+    +is_correct: bool
+  }
 }
 
-class Question {
-  +id: int
-  +prompt: string
-  +explanation: string
-  +position: int
-}
-
-class Option {
-  +id: int
-  +text: string
-  +is_correct: bool
-  +position: int
-}
-
-class Attempt {
-  +id: int
-  +score: int
-  +total_questions: int
-  +submitted_at: datetime
-}
-
-class AttemptAnswer {
-  +id: int
-  +is_correct: bool
-}
-
+User --> Role
 User "1" -- "0..*" Session
-User "1" -- "0..*" Test : creates >
-User "1" -- "0..*" Attempt : submits >
+User "1" -- "0..*" Test : owner
+User "1" -- "0..*" Attempt : student
 Test "1" -- "1..*" Question
 Question "1" -- "2..*" Option
 Test "1" -- "0..*" Attempt
 Attempt "1" -- "1..*" AttemptAnswer
-AttemptAnswer "1" -- "1" Question
-AttemptAnswer "1" -- "1" Option
+AttemptAnswer --> Question
+AttemptAnswer --> Option
+
+note bottom of Attempt
+  Таблица Attempt реализует связь
+  многие-ко-многим между
+  студентами и тестами.
+end note
 @enduml
